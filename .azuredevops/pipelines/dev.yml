@@ -1,0 +1,80 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+      - release/*
+  paths:
+    include:
+      - OrdersApi/**
+      - PaymentsApi/**
+      - .azuredevops/**
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - OrdersApi/**
+      - PaymentsApi/**
+      - .azuredevops/**
+
+variables:
+  - group: containerappsdemo-dev
+
+stages:
+  - stage: Build
+    displayName: Build & Push
+    jobs:
+      - template: ../jobs/build-push.yml
+        parameters:
+          jobName: BuildOrders
+          dockerfilePath: OrdersApi/Dockerfile
+          imageRepository: ordersapi
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          acrServiceConnection: $(ACR_SERVICE_CONNECTION)
+
+      - template: ../jobs/build-push.yml
+        parameters:
+          jobName: BuildPayments
+          dockerfilePath: PaymentsApi/Dockerfile
+          imageRepository: paymentsapi
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          acrServiceConnection: $(ACR_SERVICE_CONNECTION)
+
+  - stage: DeployOrders
+    displayName: Deploy Orders API
+    dependsOn: Build
+    condition: |
+      and(
+        succeeded('Build'),
+        ne(variables['Build.Reason'], 'PullRequest')
+      )
+    jobs:
+      - template: ../jobs/deploy.yml
+        parameters:
+          environment: dev
+          containerAppName: $(ORDERS_API_APP_NAME)
+          resourceGroup: $(RESOURCE_GROUP)
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          imageRepository: ordersapi
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+
+  - stage: DeployPayments
+    displayName: Deploy Payments API
+    dependsOn: Build
+    condition: |
+      and(
+        succeeded('Build'),
+        ne(variables['Build.Reason'], 'PullRequest')
+      )
+    jobs:
+      - template: ../jobs/deploy.yml
+        parameters:
+          environment: dev
+          containerAppName: $(PAYMENTS_API_APP_NAME)
+          resourceGroup: $(RESOURCE_GROUP)
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          imageRepository: paymentsapi
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)

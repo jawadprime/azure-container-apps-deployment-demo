@@ -1,0 +1,50 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: dev
+      source: dev
+      trigger:
+        branches:
+          include:
+            - main
+            - release/*
+
+# Override to manually re-deploy a specific build.
+# On auto-triggered runs the dev pipeline's Build ID is used automatically.
+parameters:
+  - name: imageTag
+    displayName: Image tag (Build ID) — leave blank for auto-triggered runs
+    type: string
+    default: $(resources.pipeline.dev.runID)
+
+variables:
+  - group: containerappsdemo-test
+
+stages:
+  - stage: DeployOrders
+    displayName: Deploy Orders API
+    jobs:
+      - template: ../jobs/deploy.yml
+        parameters:
+          environment: test
+          containerAppName: $(ORDERS_API_APP_NAME)
+          resourceGroup: $(RESOURCE_GROUP)
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          imageRepository: ordersapi
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          imageTag: ${{ parameters.imageTag }}
+
+  - stage: DeployPayments
+    displayName: Deploy Payments API
+    dependsOn: []
+    jobs:
+      - template: ../jobs/deploy.yml
+        parameters:
+          environment: test
+          containerAppName: $(PAYMENTS_API_APP_NAME)
+          resourceGroup: $(RESOURCE_GROUP)
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          imageRepository: paymentsapi
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          imageTag: ${{ parameters.imageTag }}

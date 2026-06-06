@@ -1,0 +1,5 @@
+@PaymentsApi_HostAddress = http://localhost:5081
+
+GET {{PaymentsApi_HostAddress}}/payments/1
+
+###

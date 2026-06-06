@@ -1,0 +1,52 @@
+parameters:
+  - name: environment
+    type: string
+  - name: containerAppName
+    type: string
+  - name: resourceGroup
+    type: string
+  - name: acrLoginServer
+    type: string
+  - name: imageRepository
+    type: string
+  - name: azureServiceConnection
+    type: string
+  - name: imageTag
+    type: string
+    default: $(Build.BuildId)
+
+jobs:
+  - deployment: Deploy
+    displayName: Deploy to ${{ parameters.environment }}
+    pool:
+      vmImage: ubuntu-latest
+    environment: containerappsdemo-${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: none
+
+            - task: AzureCLI@2
+              displayName: Update Container App image
+              env:
+                APP_NAME: ${{ parameters.containerAppName }}
+                RESOURCE_GROUP: ${{ parameters.resourceGroup }}
+                IMAGE: ${{ parameters.acrLoginServer }}/${{ parameters.imageRepository }}:${{ parameters.imageTag }}
+                IMAGE_TAG: ${{ parameters.imageTag }}
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: bash
+                scriptLocation: inlineScript
+                failOnStandardError: true
+                inlineScript: |
+                  set -euo pipefail
+
+                  az containerapp update \
+                    --name "$APP_NAME" \
+                    --resource-group "$RESOURCE_GROUP" \
+                    --image "$IMAGE" \
+                    --revision-suffix "b${IMAGE_TAG}" \
+                    --output none
+
+                  echo "Deployed $IMAGE to $APP_NAME ($RESOURCE_GROUP)"

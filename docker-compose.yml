@@ -1,0 +1,16 @@
+services:
+  paymentsapi:
+    image: ${DOCKER_REGISTRY-}paymentsapi
+    build:
+      context: .
+      dockerfile: src/PaymentsApi/Dockerfile
+
+  ordersapi:
+    image: ${DOCKER_REGISTRY-}ordersapi
+    build:
+      context: .
+      dockerfile: src/OrdersApi/Dockerfile
+    depends_on:
+      - paymentsapi
+    environment:
+      PaymentsApi__BaseUrl: http://paymentsapi:8080
