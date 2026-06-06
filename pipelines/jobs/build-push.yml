@@ -28,5 +28,4 @@ jobs:
           dockerfile: ${{ parameters.dockerfilePath }}
           buildContext: $(Build.SourcesDirectory)
           tags: |
-            $(Build.BuildId)
-            latest
+            $(Build.SourceVersion)

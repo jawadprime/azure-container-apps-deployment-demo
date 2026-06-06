@@ -13,7 +13,7 @@ parameters:
     type: string
   - name: imageTag
     type: string
-    default: $(Build.BuildId)
+    default: $(Build.SourceVersion)
 
 jobs:
   - deployment: Deploy
