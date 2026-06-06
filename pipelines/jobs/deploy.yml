@@ -46,7 +46,7 @@ jobs:
                     --name "$APP_NAME" \
                     --resource-group "$RESOURCE_GROUP" \
                     --image "$IMAGE" \
-                    --revision-suffix "b${IMAGE_TAG}" \
+                    --revision-suffix "${IMAGE_TAG:0:7}" \
                     --output none
 
                   echo "Deployed $IMAGE to $APP_NAME ($RESOURCE_GROUP)"
