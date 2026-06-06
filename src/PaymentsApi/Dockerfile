@@ -6,10 +6,11 @@ ENV ASPNETCORE_URLS=http://+:8080
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["PaymentsApi/PaymentsApi.csproj", "PaymentsApi/"]
-RUN dotnet restore "PaymentsApi/PaymentsApi.csproj"
-COPY . .
-WORKDIR "/src/PaymentsApi"
+
+COPY ["src/PaymentsApi/PaymentsApi.csproj", "src/PaymentsApi/"]
+RUN dotnet restore "src/PaymentsApi/PaymentsApi.csproj"
+COPY src/PaymentsApi/ src/PaymentsApi/
+WORKDIR /src/src/PaymentsApi
 RUN dotnet publish "PaymentsApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
