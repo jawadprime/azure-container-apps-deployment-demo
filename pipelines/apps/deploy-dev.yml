@@ -2,26 +2,11 @@ trigger:
   batch: true
   branches:
     include:
-      - main
+      - master
       - release/*
-  paths:
-    include:
-      - OrdersApi/**
-      - PaymentsApi/**
-      - .azuredevops/**
-
-pr:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - OrdersApi/**
-      - PaymentsApi/**
-      - .azuredevops/**
 
 variables:
-  - group: containerappsdemo-dev
+  - group: ContainerAppsDemo-dev
 
 stages:
   - stage: Build
@@ -30,7 +15,7 @@ stages:
       - template: ../jobs/build-push.yml
         parameters:
           jobName: BuildOrders
-          dockerfilePath: OrdersApi/Dockerfile
+          dockerfilePath: src/OrdersApi/Dockerfile
           imageRepository: ordersapi
           acrLoginServer: $(ACR_LOGIN_SERVER)
           acrServiceConnection: $(ACR_SERVICE_CONNECTION)
@@ -38,7 +23,7 @@ stages:
       - template: ../jobs/build-push.yml
         parameters:
           jobName: BuildPayments
-          dockerfilePath: PaymentsApi/Dockerfile
+          dockerfilePath: src/PaymentsApi/Dockerfile
           imageRepository: paymentsapi
           acrLoginServer: $(ACR_LOGIN_SERVER)
           acrServiceConnection: $(ACR_SERVICE_CONNECTION)
@@ -46,11 +31,6 @@ stages:
   - stage: DeployOrders
     displayName: Deploy Orders API
     dependsOn: Build
-    condition: |
-      and(
-        succeeded('Build'),
-        ne(variables['Build.Reason'], 'PullRequest')
-      )
     jobs:
       - template: ../jobs/deploy.yml
         parameters:
@@ -64,11 +44,6 @@ stages:
   - stage: DeployPayments
     displayName: Deploy Payments API
     dependsOn: Build
-    condition: |
-      and(
-        succeeded('Build'),
-        ne(variables['Build.Reason'], 'PullRequest')
-      )
     jobs:
       - template: ../jobs/deploy.yml
         parameters:

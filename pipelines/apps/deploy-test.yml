@@ -1,29 +1,36 @@
-trigger: none
-
-resources:
-  pipelines:
-    - pipeline: dev
-      source: dev
-      trigger:
-        branches:
-          include:
-            - main
-            - release/*
-
-# Override to manually re-deploy a specific build.
-# On auto-triggered runs the dev pipeline's Build ID is used automatically.
-parameters:
-  - name: imageTag
-    displayName: Image tag (Build ID) — leave blank for auto-triggered runs
-    type: string
-    default: $(resources.pipeline.dev.runID)
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - release/*
 
 variables:
-  - group: containerappsdemo-test
+  - group: ContainerAppsDemo-test
 
 stages:
+  - stage: Build
+    displayName: Build & Push
+    jobs:
+      - template: ../jobs/build-push.yml
+        parameters:
+          jobName: BuildOrders
+          dockerfilePath: src/OrdersApi/Dockerfile
+          imageRepository: ordersapi
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          acrServiceConnection: $(ACR_SERVICE_CONNECTION)
+
+      - template: ../jobs/build-push.yml
+        parameters:
+          jobName: BuildPayments
+          dockerfilePath: src/PaymentsApi/Dockerfile
+          imageRepository: paymentsapi
+          acrLoginServer: $(ACR_LOGIN_SERVER)
+          acrServiceConnection: $(ACR_SERVICE_CONNECTION)
+
   - stage: DeployOrders
     displayName: Deploy Orders API
+    dependsOn: Build
     jobs:
       - template: ../jobs/deploy.yml
         parameters:
@@ -33,11 +40,10 @@ stages:
           acrLoginServer: $(ACR_LOGIN_SERVER)
           imageRepository: ordersapi
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
-          imageTag: ${{ parameters.imageTag }}
 
   - stage: DeployPayments
     displayName: Deploy Payments API
-    dependsOn: []
+    dependsOn: Build
     jobs:
       - template: ../jobs/deploy.yml
         parameters:
@@ -47,4 +53,3 @@ stages:
           acrLoginServer: $(ACR_LOGIN_SERVER)
           imageRepository: paymentsapi
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
-          imageTag: ${{ parameters.imageTag }}
