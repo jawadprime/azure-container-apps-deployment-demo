@@ -26,7 +26,7 @@ jobs:
           organization: 'jawad-weeb-ogranization'
           scannerMode: 'dotnet'
           projectKey: 'jawad-weeb-ogranization_Practise-DevOps'
-                projectName: 'Practise DevOps'
+          projectName: 'Practise DevOps'
                 
       - task: DotNetCoreCLI@2
         displayName: Build Orders API
