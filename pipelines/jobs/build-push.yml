@@ -9,7 +9,7 @@ parameters:
     type: string
   - name: acrServiceConnection
     type: string
-
+    
 jobs:
   - job: ${{ parameters.jobName }}
     displayName: Build & Push ${{ parameters.imageRepository }}
@@ -26,13 +26,19 @@ jobs:
           organization: 'jawad-weeb-ogranization'
           scannerMode: 'dotnet'
           projectKey: 'jawad-weeb-ogranization_Practise-DevOps'
-          projectName: 'Practise DevOps'
-
+                projectName: 'Practise DevOps'
+                
       - task: DotNetCoreCLI@2
-        displayName: Build Solution
+        displayName: Build Orders API
         inputs:
-          command: 'build'
-          projects: '**/*.sln'
+          command: build
+          projects: 'src/OrdersApi/OrdersApi.csproj'
+      
+      - task: DotNetCoreCLI@2
+        displayName: Build Payments API
+        inputs:
+          command: build
+          projects: 'src/PaymentsApi/PaymentsApi.csproj'
 
       - task: SonarCloudAnalyze@3
         displayName: Run SonarCloud Analysis
