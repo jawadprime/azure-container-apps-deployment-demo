@@ -19,6 +19,24 @@ jobs:
       - checkout: self
         clean: true
 
+      - task: SonarCloudPrepare@3
+        displayName: Prepare SonarCloud Analysis
+        inputs:
+          SonarCloud: 'sc-sonarcloud'
+          organization: 'jawad-weeb-ogranization'
+          scannerMode: 'dotnet'
+          projectKey: 'jawad-weeb-ogranization_Practise-DevOps'
+          projectName: 'Practise DevOps'
+
+      - task: DotNetCoreCLI@2
+        displayName: Build Solution
+        inputs:
+          command: 'build'
+          projects: '**/*.sln'
+
+      - task: SonarCloudAnalyze@3
+        displayName: Run SonarCloud Analysis
+
       - task: Docker@2
         displayName: Build and push to ACR
         inputs:
