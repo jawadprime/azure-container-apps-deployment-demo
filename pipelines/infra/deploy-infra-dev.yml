@@ -43,8 +43,8 @@ stages:
     displayName: Deploy Container Apps
 
     dependsOn:
-      # - DeployContainerRegistry
-      # - DeployLogAnalytics
+      - DeployContainerRegistry
+      - DeployLogAnalytics
 
     jobs:
       - template: ../jobs/deploy-bicep.yml
