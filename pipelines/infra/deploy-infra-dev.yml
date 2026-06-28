@@ -23,7 +23,6 @@ stages:
           bicepParameters: >
             acrName=$(ACR_NAME)
             location="$(LOCATION)"
-            sku=$(ACR_SKU)
 
   - stage: DeployLogAnalytics
     displayName: Deploy Log Analytics
