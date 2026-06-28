@@ -1,0 +1,33 @@
+parameters:
+  jobName: ''
+  environment: ''
+  azureServiceConnection: ''
+  resourceGroup: ''
+  bicepFile: ''
+  bicepParameters: ''
+
+jobs:
+  - deployment: ${{ parameters.jobName }}
+    displayName: ${{ parameters.jobName }}
+
+    environment: ${{ parameters.environment }}
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: Deploy Bicep
+
+              inputs:
+                azureSubscription: ${{ parameters.azureServiceConnection }}
+                scriptType: bash
+                scriptLocation: inlineScript
+
+                inlineScript: |
+                  az deployment group create \
+                    --resource-group "${{ parameters.resourceGroup }}" \
+                    --template-file "${{ parameters.bicepFile }}" \
+                    --parameters ${{ parameters.bicepParameters }}

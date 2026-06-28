@@ -1,0 +1,83 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - release/*
+
+variables:
+  - group: ContainerAppsDemo-dev
+
+stages:
+  - stage: DeployContainerRegistry
+    displayName: Deploy Container Registry
+
+    jobs:
+      - template: ../jobs/deploy-bicep.yml
+        parameters:
+          jobName: DeployContainerRegistry
+          environment: dev
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          resourceGroup: $(RESOURCE_GROUP)
+          bicepFile: InfrastructureAsCode/containerRegistry/containerRegistry.bicep
+          bicepParameters: >
+            acrName=$(ACR_NAME)
+            location="$(LOCATION)"
+            sku=$(ACR_SKU)
+
+  - stage: DeployLogAnalytics
+    displayName: Deploy Log Analytics
+
+    jobs:
+      - template: ../jobs/deploy-bicep.yml
+        parameters:
+          jobName: DeployLogAnalytics
+          environment: dev
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          resourceGroup: $(RESOURCE_GROUP)
+          bicepFile: InfrastructureAsCode/logAnalytics/logAnalytics.bicep
+          bicepParameters: >
+            workspaceName=$(LOG_ANALYTICS_NAME)
+            location="$(LOCATION)"
+
+  - stage: DeployContainerApps01
+    displayName: Deploy Container Apps
+
+    dependsOn:
+      - DeployContainerRegistry
+      - DeployLogAnalytics
+
+    jobs:
+      - template: ../jobs/deploy-bicep.yml
+        parameters:
+          jobName: DeployContainerApps
+          environment: dev
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          resourceGroup: $(RESOURCE_GROUP)
+          bicepFile: InfrastructureAsCode/containerApps/containerApps.bicep
+          bicepParameters: >
+            environmentName=$(CONTAINER_APP_ENVIRONMENT_NAME)
+            acrName=$(ACR_NAME)
+            workspaceName=$(LOG_ANALYTICS_NAME)
+            location="$(LOCATION)"
+
+ - stage: DeployContainerApps01
+    displayName: Deploy Container Apps
+
+    dependsOn:
+      - DeployContainerRegistry
+      - DeployLogAnalytics
+
+    jobs:
+      - template: ../jobs/deploy-bicep.yml
+        parameters:
+          jobName: DeployContainerApps
+          environment: dev
+          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
+          resourceGroup: $(RESOURCE_GROUP)
+          bicepFile: InfrastructureAsCode/containerApps/containerApps.bicep
+          bicepParameters: >
+            environmentName=$(CONTAINER_APP_ENVIRONMENT_NAME)
+            acrName=$(ACR_NAME)
+            workspaceName=$(LOG_ANALYTICS_NAME)
+            location="$(LOCATION)"
