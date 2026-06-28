@@ -19,7 +19,7 @@ stages:
           environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
-          bicepFile: InfrastructureAsCode/containerRegistry/containerRegistry.bicep
+          bicepFile: infrastructureAsCode/containerRegistry/containerRegistry.bicep
           bicepParameters: >
             acrName=$(ACR_NAME)
             location="$(LOCATION)"
@@ -35,7 +35,7 @@ stages:
           environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
-          bicepFile: InfrastructureAsCode/logAnalytics/logAnalytics.bicep
+          bicepFile: infrastructureAsCode/logAnalytics/logAnalytics.bicep
           bicepParameters: >
             workspaceName=$(LOG_ANALYTICS_NAME)
             location="$(LOCATION)"
@@ -54,7 +54,7 @@ stages:
           environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
-          bicepFile: InfrastructureAsCode/containerApps/containerApps.bicep
+          bicepFile: infrastructureAsCode/containerApps/containerApps.bicep
           bicepParameters: >
             environmentName=$(CONTAINER_APP_ENVIRONMENT_NAME)
             acrName=$(ACR_NAME)
