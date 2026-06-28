@@ -16,7 +16,7 @@ stages:
       - template: ../jobs/deploy-bicep.yml
         parameters:
           jobName: DeployContainerRegistry
-          environment: dev
+          environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
           bicepFile: InfrastructureAsCode/containerRegistry/containerRegistry.bicep
@@ -32,7 +32,7 @@ stages:
       - template: ../jobs/deploy-bicep.yml
         parameters:
           jobName: DeployLogAnalytics
-          environment: dev
+          environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
           bicepFile: InfrastructureAsCode/logAnalytics/logAnalytics.bicep
@@ -51,7 +51,7 @@ stages:
       - template: ../jobs/deploy-bicep.yml
         parameters:
           jobName: DeployContainerAppsEnvironment
-          environment: dev
+          environment: containerappsdemo-dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
           bicepFile: InfrastructureAsCode/containerApps/containerApps.bicep
