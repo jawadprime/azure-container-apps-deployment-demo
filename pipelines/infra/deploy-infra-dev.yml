@@ -40,7 +40,7 @@ stages:
             workspaceName=$(LOG_ANALYTICS_NAME)
             location="$(LOCATION)"
 
-  - stage: DeployContainerApps01
+  - stage: DeployContainerAppsEnvironment
     displayName: Deploy Container Apps
 
     dependsOn:
@@ -50,28 +50,7 @@ stages:
     jobs:
       - template: ../jobs/deploy-bicep.yml
         parameters:
-          jobName: DeployContainerApps
-          environment: dev
-          azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
-          resourceGroup: $(RESOURCE_GROUP)
-          bicepFile: InfrastructureAsCode/containerApps/containerApps.bicep
-          bicepParameters: >
-            environmentName=$(CONTAINER_APP_ENVIRONMENT_NAME)
-            acrName=$(ACR_NAME)
-            workspaceName=$(LOG_ANALYTICS_NAME)
-            location="$(LOCATION)"
-
- - stage: DeployContainerApps01
-    displayName: Deploy Container Apps
-
-    dependsOn:
-      - DeployContainerRegistry
-      - DeployLogAnalytics
-
-    jobs:
-      - template: ../jobs/deploy-bicep.yml
-        parameters:
-          jobName: DeployContainerApps
+          jobName: DeployContainerAppsEnvironment
           environment: dev
           azureServiceConnection: $(AZURE_SERVICE_CONNECTION)
           resourceGroup: $(RESOURCE_GROUP)
